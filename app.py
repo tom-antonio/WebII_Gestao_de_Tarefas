@@ -24,7 +24,7 @@ def ler_dados():
 #Função para escrever os dados no arquivo JSON
 def setar_dados(dados):
     with open(ARQUIVO_DB, 'w', encoding='utf-8') as f:
-        json.dump(dados, f, indent=4)
+        json.dump(dados, f, indent=4, ensure_ascii=False)
 
 # --- ROTAS DO CRUD ---
 
@@ -35,12 +35,17 @@ def index():
     return render_template('index.html', tarefas=tarefas)
 
 # 2. CREATE - Adicionar nova tarefa
-@app.route('/adicionar', methods=['POST'])
-def adicionar():
-    nova_tarefa = request.form['tarefa']
-    tarefas = ler_dados()
-    tarefas.append(nova_tarefa)
-    setar_dados(tarefas)
+@app.route('/criar', methods=['POST'])
+def criar():
+    nova_tarefa = request.form.get('tarefa')
+    if nova_tarefa:
+        tarefas = ler_dados()
+        novo_id = str(len(tarefas) + 1)  # Gera um novo ID incremental
+        tarefas[novo_id] = {
+            'descricao': nova_tarefa,
+            'status': 'pendente'
+        }
+        setar_dados(tarefas)
     return redirect(url_for('index'))
 
 # 3. UPDATE - Alterar status da tarefa
