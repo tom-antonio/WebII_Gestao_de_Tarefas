@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Gestão de Tarefas</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    </head>
+
+    <body>
+        <main class="container">
+            <h1>Gestão de Tarefas</h1>
+            <h7>Demonstração de CRUD Full-Stack com Persistência em arquivo JSON</h7>
+            <p></p>
+            <section id="formulario">
+                <form method="POST">
+                    <h2>Nova Tarefa</h2>
+                    <div style="display: flex; gap: 10px;"> 
+                        <input type="text" name="tarefa" placeholder="Digite a descrição da tarefa" required>
+                        <button type="submit" name="acao" value="adicionar" id="botoes">Adicionar</button>
+                    </div>
+                    <h2>Suas Tarefas</h2>
+                    <textarea name="descricao" readonly>{{ montante if montante is not none else 'Nenhuma tarefa cadastrada no momento' }}</textarea>
+            </section>
+
+            {% if erro %}
+                <p style="color: red;">{{ erro }}</p>
+            {% endif %}
+                    
+        </main>
+    </body>
+</html>
