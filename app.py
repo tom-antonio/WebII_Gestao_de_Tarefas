@@ -1,28 +1,65 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
+import json #importa a biblioteca para manipulação de arquivos JSON
+import os #importa a biblioteca para manipulação de arquivos e diretórios
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    tarefa = None
-    erro = None
+#Configurações para o arquivo JSON
+PASTA_DO_PROJETO = os.path.dirname(os.path.abspath(__file__))
+ARQUIVO_DB = os.path.join(PASTA_DO_PROJETO, 'db.json')
 
-    if request.method == 'POST':
+#Função para ler os dados do arquivo JSON
+def ler_dados():
+    # Verifica se o arquivo existe, se não existir, cria um novo arquivo com um dicionário vazio
+    if not os.path.exists(ARQUIVO_DB):
+        setar_dados({})  # Cria o arquivo com um dicionário vazio se não existir
+        return {}
+    
+    with open(ARQUIVO_DB, 'r', encoding='utf-8') as f:
         try:
-            #receber os dados
-            tarefa = request.form.get('tarefa')
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}  # Retorna um dicionário vazio se o arquivo estiver vazio ou corrompido
 
-            #lógica do exercicio
-            if tarefa:
+#Função para escrever os dados no arquivo JSON
+def setar_dados(dados):
+    with open(ARQUIVO_DB, 'w', encoding='utf-8') as f:
+        json.dump(dados, f, indent=4)
 
-            else:
+# --- ROTAS DO CRUD ---
 
-        except ValueError:
-            erro = "Informação inválida, digite números válidos."
-        except Exception as erro2:
-            erro = f"Ocorreu um erro inesperado: {erro2}"
+# 1. READ - Listar tarefas
+@app.route('/')
+def index():
+    tarefas = ler_dados()
+    return render_template('index.html', tarefas=tarefas)
 
-    return render_template('index.html', inicial=inicial, juros=juros, meses=meses, montante=montante, erro=erro, juros_calc=juros_calc)
+# 2. CREATE - Adicionar nova tarefa
+@app.route('/adicionar', methods=['POST'])
+def adicionar():
+    nova_tarefa = request.form['tarefa']
+    tarefas = ler_dados()
+    tarefas.append(nova_tarefa)
+    setar_dados(tarefas)
+    return redirect(url_for('index'))
+
+# 3. UPDATE - Alterar status da tarefa
+@app.route('/atualizar/<int:id_tarefa>', methods=['POST'])
+def atualizar(id_tarefa):
+    tarefas = ler_dados()
+    if 0 <= id_tarefa < len(tarefas):
+        tarefas[id_tarefa] = request.form['tarefa']
+        setar_dados(tarefas)
+    return redirect(url_for('index'))
+
+# 4. DELETE - Remover tarefa
+@app.route('/remover/<int:id_tarefa>', methods=['POST'])
+def remover(id_tarefa):
+    tarefas = ler_dados()
+    if 0 <= id_tarefa < len(tarefas):
+        tarefas.pop(id_tarefa)
+        setar_dados(tarefas)
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)

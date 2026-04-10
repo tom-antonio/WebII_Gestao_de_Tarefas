@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
     <head>
         <title>Gestão de Tarefas</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
@@ -7,11 +7,13 @@
 
     <body>
         <main class="container">
+            <hgroup>
             <h1>Gestão de Tarefas</h1>
             <h7>Demonstração de CRUD Full-Stack com Persistência em arquivo JSON</h7>
-            <p></p>
+            </hgroup>
+            <hr>
             <section id="formulario">
-                <form method="POST">
+                <form action="{{ url}}" method="POST">
                     <h2>Nova Tarefa</h2>
                     <div style="display: flex; gap: 10px;"> 
                         <input type="text" name="tarefa" placeholder="Digite a descrição da tarefa" required>
@@ -19,6 +21,10 @@
                     </div>
                     <h2>Suas Tarefas</h2>
                     <textarea name="descricao" readonly>{{ montante if montante is not none else 'Nenhuma tarefa cadastrada no momento' }}</textarea>
+            </section>
+
+            <section id="lista">
+
             </section>
 
             {% if erro %}
