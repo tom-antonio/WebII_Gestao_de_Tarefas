@@ -49,19 +49,23 @@ def criar():
     return redirect(url_for('index'))
 
 # 3. UPDATE - Alterar status da tarefa
-@app.route('/atualizar/<int:id_tarefa>', methods=['POST'])
+@app.route('/atualizar/<id_tarefa>', methods=['POST'])
 def atualizar(id_tarefa):
     tarefas = ler_dados()
-    if 0 <= id_tarefa < len(tarefas):
-        tarefas[id_tarefa] = request.form['tarefa']
+    if id_tarefa in tarefas:
+        # Alterna entre 'pendente' e 'concluída'
+        if tarefas[id_tarefa]['status'] == 'pendente':
+            tarefas[id_tarefa]['status'] = 'concluída'
+        else:
+            tarefas[id_tarefa]['status'] = 'pendente'
         setar_dados(tarefas)
     return redirect(url_for('index'))
 
 # 4. DELETE - Remover tarefa
-@app.route('/remover/<int:id_tarefa>', methods=['POST'])
+@app.route('/remover/<id_tarefa>', methods=['POST'])
 def remover(id_tarefa):
     tarefas = ler_dados()
-    if 0 <= id_tarefa < len(tarefas):
+    if id_tarefa in tarefas:
         tarefas.pop(id_tarefa)
         setar_dados(tarefas)
     return redirect(url_for('index'))

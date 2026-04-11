@@ -19,12 +19,65 @@
                         <input type="text" name="tarefa" placeholder="Digite a descrição da tarefa" required>
                         <button type="submit" name="acao" value="adicionar" id="botoes">Adicionar</button>
                     </div>
-                    <h2>Suas Tarefas</h2>
-                    <textarea name="descricao" readonly>{{ montante if montante is not none else 'Nenhuma tarefa cadastrada no momento' }}</textarea>
+                </form>
             </section>
 
             <section id="lista">
-
+                <h2>Suas Tarefas</h2>
+                {% if tarefas %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Descrição</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for id, tarefa in tarefas.items() %}
+                                <tr>
+                                    <td><strong>#{{ id }}</strong></td>
+                                    <td>{{ tarefa.descricao }}</td>
+                                    <td>
+                                        <span style="padding: 4px 8px; border-radius: 4px; 
+                                            {% if tarefa.status == 'concluída' %}
+                                                background-color: #4caf50; color: white;
+                                            {% else %}
+                                                background-color: #ff9800; color: white;
+                                            {% endif %}
+                                        ">
+                                            {{ tarefa.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <form action="{{ url_for('atualizar', id_tarefa=id) }}" method="POST" style="display: inline;">
+                                            <button type="submit" class="outline" 
+                                                style="padding: 4px 8px; font-size: 12px;">
+                                                {% if tarefa.status == 'pendente' %}
+                                                    ✓ Concluir
+                                                {% else %}
+                                                    ↺ Pendente
+                                                {% endif %}
+                                            </button>
+                                        </form>
+                                        <form action="{{ url_for('remover', id_tarefa=id) }}" method="POST" style="display: inline;">
+                                            <button type="submit" class="outline contrast" 
+                                                style="padding: 4px 8px; font-size: 12px;"
+                                                onclick="return confirm('Deseja remover esta tarefa?')">
+                                                🗑 Remover
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p style="text-align: center; color: #999;">
+                        <em>Nenhuma tarefa cadastrada no momento</em>
+                    </p>
+                {% endif %}
             </section>
 
             {% if erro %}
